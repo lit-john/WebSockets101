@@ -1,0 +1,128 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+/**
+ * Note that the variable app below is ExpressJS app that is created in line 23 of app.js and that 
+ * gets exported at the end of the same file. So what happens is, the node app starts here but then
+ * the next line (require('../app')) causes the code in app.js to be executed. So in essence, the 
+ * code in app.js gets executed before all, bar the first line, of the code in this file. Code 
+ * execution then returns here, to line 15.
+ */
+var app = require('../app');
+var debug = require('debug')('009-WebSockets:server');
+var http = require('http');
+
+
+/**
+ * Get port from environment and store in Express.
+ */
+
+var port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+
+var server = http.createServer(app);
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
+
+/**
+ * START OF WEB SOCKET CODE
+ * 
+ * The following line requires an object exported from 'socket.io' and calls the listen
+ * method on it, passing it the HttpServer that has just been created using the ExpressJS
+ * app (line 30 above). This method in turn returns a "socket.io" server (which I store in 
+ * a variable called io) which uses web sockets to communicate with clients.
+ * 
+ * You should really go through the documentation at http://socket.io/
+ */
+var io = require('socket.io').listen(server);
+
+/**
+ * The code below listens for the "connect" event and when it receives it will call the
+ * function onSocketConnect that is on the app object (I define the object in app.js). The 
+ * "connect" event is issued by the socket.io server when it receives a connection.
+ * */ 
+
+io.on('connect', app.onSocketConnect);
+
+/**
+ * Next I store the "socket.io" server stored in the io variable up on the ExpressJS app
+ * object under the name 'io'. Later I can retrieve it using app.get('io').
+ */
+app.set('io', io);
+
+/**
+ * END OF WEB SOCKET CODE
+ */
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+  debug('Listening on ' + bind);
+}

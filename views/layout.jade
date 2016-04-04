@@ -1,0 +1,18 @@
+doctype html
+html
+    head
+        title Sampe Web Socket Client
+        // Link to Pure.css so that I can use their grip system
+        link(href="//yui.yahooapis.com/pure/0.6.0/pure-min.css", rel="stylesheet")
+        link(rel='stylesheet', href='/stylesheets/style.css')
+        
+        // Link to socket.io so that I can use it to communicate with my socket.io server
+        script(type="text/javascript", src="//cdn.socket.io/socket.io-1.4.5.js")
+        
+        // Link to jquery so that I can use it in my custom.js file
+        script(type="text/javascript", src="//code.jquery.com/jquery-1.11.2.min.js")
+        
+        // My client side javascriot code where all the real majic happens
+        script(type="text/javascript", src="/javascripts/custom.js")
+    body
+        block content
