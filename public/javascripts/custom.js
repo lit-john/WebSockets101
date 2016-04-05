@@ -12,7 +12,7 @@ $(document).ready(function(){
     var socket = io();
     
     // jQuery code to catch the form submit
-    $('form').submit(function(){
+    $('form[name="chat"]').submit(function(){
       console.log("Sending a message")
       
       // Get the contents of the html element that has the is message (i.e. the form input field in
@@ -27,13 +27,37 @@ $(document).ready(function(){
       // resquest to the url specified in the action field of the form.
       return false;
     });
+    
+    $('form[name="login"]').submit(function(){
+       socket.emit('login', $('#username').val());
+       return false; 
+    });
 
     // When I receive a 'chat message' event ...
-    socket.on('chat message', function(msg){
+    socket.on('chat message', function(data){
       console.log("Received a message");
       
       // Append the contents of the message received from the server to the li's
-      $('#messages').append($('<li>').text(msg));
+      $('#messages').prepend($('<li>').text(data.user + " : " + data.msg));
+    });
+    
+    // When I receive a login message from the server (in response to me emitting a
+    // login event to the server)
+    socket.on('login', function(msg){
+       console.log("on.login");
+       // Hide the loginPage
+       $('.loginPage').hide();
+       // Show the chatPage
+       $('.chatPage').show();
+       $('#message').focus();
+       
+       $('#messages').append($('<li>').text("Welcome. There are " + msg.numClients + " people online"));
+    });
+    
+    socket.on('user joined', function(msg){
+      if ($('.chatPage').is(':visible')) {
+        $('#messages').prepend($('<li>').text(msg.username + " just joined."));
+      }
     });
 
 });

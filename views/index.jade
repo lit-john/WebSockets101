@@ -2,14 +2,31 @@ extends layout
 
 block content
     body.pure-g
-            div.pure-u-1-3
-                div.pure-g
-                    // Notice my form has no action, this is because I am going to use javascript
-                    // to process the form.
-                    form(action="")
-                        div.pure-u-2-3
-                            input#message(autocomplete="off")
-                        div.pure-u-1-3
-                            button Send
-            div.pure-u-2-3
-                ul#messages
+        div.pure-u-1-3
+        // Initially all .chatPage elements are hidden
+        div.chatPage.pure-u-1-3
+            div.pure-g
+                // Notice my form has no action, this is because I am going to use javascript
+                // to process the form.
+                form(action="", name="chat")
+                    div.pure-u-2-3
+                        input#message(autocomplete="off")
+                    div.pure-u-1-3
+                        button Send
+
+        div.loginPage.pure-u-1-3
+            div.pure-g
+                // Notice my form has no action, this is because I am going to use javascript
+                // to process the form.
+                form(action="", name="login")
+                    div.pure-u-2-3
+                        input#username(autocomplete="off", placeholder="Your name")
+                    div.pure-u-1-3
+                        button Login
+        div.pure-u-1-3
+        
+        div.pure-u-1-3
+        div.pure-u-1-3.chatPage
+            ul#messages
+        div.pure-u-1-3
+        

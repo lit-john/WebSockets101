@@ -43,7 +43,7 @@ form button {
       
 #messages { 
 	list-style-type: none; 
-	margin: 0; padding: 0 0 0 10px; 
+	margin: 0;
 }
 
 #messages li { 
@@ -53,4 +53,8 @@ form button {
      
 #messages li:nth-child(odd) { 
 	background: #eee; 
+}
+
+.chatPage {
+    display: none;
 }

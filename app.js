@@ -47,8 +47,12 @@ app.use('/', routes);
  * the server that both parties can use to communicate to eack other.)
  */
 
+// The following variable will keep track of the number of clients connected
+var connectedClients = 0;
+
 app.onSocketConnect = function(socket) {
-  console.log("A user connected");
+  // This variable gets set when a client connects and unset when they disconnect.
+  var connected = false;
   
   // Remember in bin/www I stored the socket.io server up on the app under the name io. Now I
   // am retrieving the server as I need to use it.
@@ -61,19 +65,42 @@ app.onSocketConnect = function(socket) {
   // connect, message and disconnect events. We have already used the connect event in 
   // www/bin and we will use the other two soon.
   
-  socket.on('chat message', function(msg){
+  socket.on('chat message', function(data){
+    console.log("chat message event: " + data);
     //socket.broadcast.emit('chat message', msg);
     // emit a 'chat message' event with the msg to all connected clients
-    io.emit('chat message', msg);
+    io.emit('chat message', {user: socket.username, msg: data});
   });
   
   // Add an event handler that will get called when we
   // receive a disconnect message
   socket.on('disconnect', function(){
-    console.log("A user disconnected");
+      console.log("A user disconnected");
+      
+      connected = false;
+      if (connectedClients > 0) {
+        connectedClients--;
+      }
   });
 
-  
+ // A login event will be sent by clients when they want to login. Clients will pass their
+ // login details with the event.
+  socket.on('login', function(username) {
+      console.log("login event: " + username);
+      // If the client is already logged in then just return. Note that I personally
+      // would have written the code below as 
+      //    if connected return;
+      
+      if (connected == true) {
+          return;
+      }
+      
+      // There is a socket per connection (which is usually means a socket per client) so 
+      // let's store the clients username on their socket object.
+      socket.username = username;
+      connectedClients++;
+      socket.emit('login', {numClients: connectedClients});
+  });
 }
 
 /**
